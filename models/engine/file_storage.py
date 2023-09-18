@@ -52,13 +52,18 @@ class FileStorage:
             with open(FileStorage.__file_path, 'r') as f:
                 temp = json.load(f)
                 for key, val in temp.items():
+                    # TODO: Refactor
+                    # Might cause a bug. Should change to
+                    # FileStorage.__objects because self.all()
+                    # will sometimes return only one instance objects
                     self.all()[key] = classes[val['__class__']](**val)
         except FileNotFoundError:
             pass
 
     def delete(self, obj=None):
         """ Delete objects from the File Storage """
+        classname: str = obj.__class__.__name__
         if obj is not None:
-            key = obj.__class__.__name__ + '.' + obj.id
+            key = f"{classname}.{obj.id}"
             if key in FileStorage.__objects:
                 del FileStorage.__objects[key]
